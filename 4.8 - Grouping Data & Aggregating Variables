@@ -1,0 +1,63 @@
+## Generating a Loyalty flag based on customer spending using a Loc()
+# Max Order column
+ords_prods_merge['max_order'] = ords_prods_merge.groupby(['user_id'])['order_number'].transform(np.max)
+# Loc Loyal Customer
+ords_prods_merge.loc[ords_prods_merge['max_order'] > 40, 'loyalty_flag'] = 'Loyal customer'
+# Loc Regular Customer
+ords_prods_merge.loc[(ords_prods_merge['max_order'] <= 40) & (ords_prods_merge['max_order'] > 10), 'loyalty_flag'] = 'Regular customer'
+# Loc New Customer
+ords_prods_merge.loc[ords_prods_merge['max_order'] <= 10, 'loyalty_flag'] = 'New customer'
+# Chekcing Loyalty Flags
+ords_prods_merge['loyalty_flag'].value_counts(dropna=False)
+      loyalty_flag
+      Regular customer    15876776
+      Loyal customer      10284093
+      New customer         6243990
+      Name: count, dtype: int64
+
+
+## Checking money spend by customer loyatly flags
+ords_prods_merge.groupby('loyalty_flag').agg({'prices':['mean',]})
+                        	prices
+                          mean
+      loyalty_flag	
+      Loyal customer	    10.386336
+      New customer	      13.294670
+      Regular customer	  12.495717
+ords_prods_merge.groupby('user_id')['prices'].mean()
+# Low Spender
+ords_prods_merge.loc[ords_prods_merge['prices'] < 10, 'spender_type'] = 'Low spender'
+# High Spender
+ords_prods_merge.loc[ords_prods_merge['prices'] >= 10, 'spender_type'] = 'High spender'
+# Checking Spender function
+ords_prods_merge['spender_type'].value_counts(dropna=False)
+      spender_type
+      Low spender     21760937
+      High spender    10643922
+      Name: count, dtype: int64
+
+
+## Creating a frequency flag based on orders using Loc()
+# Creating Frequency Flag
+ords_prods_merge['freq'] = ords_prods_merge.groupby(['user_id'])['days_since_prior_order'].transform(np.mean)
+# Loc Non Frequent Customer
+ords_prods_merge.loc[ords_prods_merge['days_since_prior_order'] >  20, 'freq'] = 'Non-frequent customer'
+# Loc Regular Frequency Customer
+ords_prods_merge.loc[(ords_prods_merge['days_since_prior_order'] > 10) & (ords_prods_merge['days_since_prior_order'] <= 20), 'freq'] = 'Regular customer'
+# Loc Freuqency Customer
+ords_prods_merge.loc[ords_prods_merge['days_since_prior_order'] <= 10, 'freq'] = 'Frequent customer'
+# Checking Frequency Function
+ords_prods_merge['freq'].value_counts(dropna=False)
+      freq
+      Frequent customer        19042466
+      Regular customer          6055803
+      Non-frequent customer     5230494
+      30.0                        79432
+      7.0                          4707
+                                 ...   
+      7.270742                        1
+      4.011905                        1
+      11.353741                       1
+      3.467532                        1
+      8.035088                        1
+      Name: count, Length: 99564, dtype: int64
