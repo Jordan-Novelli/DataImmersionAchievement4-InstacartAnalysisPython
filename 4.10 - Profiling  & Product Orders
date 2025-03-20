@@ -1,0 +1,48 @@
+## Instacart customers were profiled by age, family status, marital status, and dependents
+# Creating profiling function
+def profiling(row):
+    if row['Age'] <= 17 and row['fam_status'] in ('living with parents and siblings'):
+        return 'adolescent'
+    elif row['Age'] >= 18 and row['fam_status'] in ('single', 'divorced/widowed', 'living with parents and siblings'):
+        return 'single adult'
+    elif (row['Age'] >= 18) and (row['Age'] <= 40) and row['fam_status'] in ('married') and row['independants'] >=1:
+        return 'young parent'
+    elif (row['Age'] >= 40) and (row['Age'] <= 64) and row['fam_status'] in ('married') and row['independants'] >=1:
+        return 'parent'
+    elif row['Age'] >=65:
+        return 'elderly'
+    else:
+        return 'Other'
+
+# Creating Column for profiling
+df_insta['Profile'] = df_insta.apply(profiling, axis=1)
+
+# Running Profile function
+df_insta['Profile'].value_counts(dropna=False)
+      Profile
+      single adult    9648106
+      parent          9088917
+      young parent    7212836
+      elderly         6455000
+      Name: count, dtype: int64
+      
+----------------------------------------
+## Find the products most ordered
+# Creating a sort for the busiest period(hr) of day
+df_sorted = df_insta.sort_values(by='busiest_period_of_day')
+
+# Analyzing the sorted data by column
+df_sorted[['product_id','product_name','order_dow','order_hour_of_day','busiest_period_of_day']].head(30)
+
+# Group by busiest period of day and product 
+sales_by_period = df_sorted.groupby(['order_hour_of_day','busiest_period_of_day','product_name']).size().reset_index(name='sales_count')
+
+# Find the most sold product in each period
+most_sold_in_period = sales_by_period.loc[sales_by_period.groupby('busiest_period_of_day')['sales_count'].idxmax()]
+
+# Analyze data
+print(most_sold_in_period)
+              order_hour_of_day busiest_period_of_day product_name  sales_count
+      529619                 17        Average orders       Banana        30701
+      742706                 23         Fewest orders       Banana         5372
+      233498                 10           Most orders       Banana        40731
