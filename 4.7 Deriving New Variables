@@ -1,0 +1,104 @@
+## Day of week most orders take place (0 = Saturday, 1 = Sunday, etc)
+df_ords_prods_merged['order_dow'].value_counts(dropna=False)
+      order_dow
+      0    6204182
+      1    5660230
+      6    4496490
+      2    4213830
+      5    4205791
+      3    3840534
+      4    3783802
+      Name: count, dtype: int64
+
+
+## Creating Column 'Busiest Day'
+result = []
+for value in df_ords_prods_merged["order_dow"]:
+  if value == 0:
+    result.append("Busiest days")
+  elif value == 4:
+    result.append("Least busy")
+  else:
+    result.append("Regularly busy")
+
+
+## Count of busiest day
+df_ords_prods_merged['Busiest day'].value_counts(dropna=False)
+      Busiest day
+      Regularly busy    22416875
+      Busiest days       6204182
+      Least busy         3783802
+      Name: count, dtype: int64
+
+
+** If then statement to manage price labeling
+def price_label(row):
+  if row['prices'] <= 5:
+    return 'Low-range product'
+  elif (row['prices'] > 5) and (row['prices'] <= 15):
+    return 'Mid-range product'
+  elif row['prices'] > 15:
+    return 'High range'
+  else: return 'Not enough data'
+
+
+** Price Label code that produces the amouhnt of items in each price range.
+df['price_range'].value_counts(dropna=False)
+      price_range
+      Mid-range product    652638
+      Low-range product    338018
+      High range             9344
+
+
+## Looking for orders by hour
+df_ords_prods_merged['order_hour_of_day'].value_counts(dropna=False)
+      order_hour_of_day
+      10    2761760
+      11    2736140
+      14    2689136
+      15    2662144
+      13    2660954
+      12    2618532
+      16    2535202
+      9     2454203
+      17    2087654
+      8     1718118
+      18    1636502
+      19    1258305
+      20     976156
+      7      891054
+      21     795637
+      22     634225
+      23     402316
+      6      290493
+      0      218769
+      1      115700
+      5       87961
+      2       69375
+      4       53242
+      3       51281
+      Name: count, dtype: int64
+
+
+## Setting up for new column for busiest hours of the day
+result = []
+for value in df_ords_prods_merged["order_hour_of_day"]:
+  if value in [10,11,14,15,13,12,16,9]:
+    result.append("Most orders")
+  elif value in [17,8,18,19,20,7,21,22]:
+    result.append("Average orders")
+  else:
+    result.append("Fewest orders")
+
+
+## New columns for busiest hours of day
+df_ords_prods_merged['busiest_period_of_day']=result
+
+
+## Counts of busiest period of day
+df_ords_prods_merged['busiest_period_of_day'].value_counts(dropna=False)
+      busiest_period_of_day
+      Most orders       21118071
+      Average orders     9997651
+      Fewest orders      1289137
+      Name: count, dtype: int64
