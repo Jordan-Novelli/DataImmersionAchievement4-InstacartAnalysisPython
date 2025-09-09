@@ -8,4 +8,4 @@ Instacart Stakeholders are interested to know the following:
 4) What products are most popular to organize departments by frequency of sales.
 5) Better understand customers via a type of loyalty program that can categorize money spent based on loyalty, frequently purchased products, region, income and age.
 
-**This was the initial start of using Python. This respository does includes introductory of how to use Python.**
+**This was the initial start of using Python. This respository does includes introductory code of how to use Python.**
